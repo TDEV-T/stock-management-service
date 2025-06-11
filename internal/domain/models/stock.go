@@ -6,12 +6,25 @@ import (
 	"gorm.io/gorm"
 )
 
-type Product struct {
+type Category struct {
 	gorm.Model
-	Name        string `gorm:"not null"`
-	Description string
-	Category    string `gorm:"not null"`
-	SKU         string `gorm:"uniqueIndex;not null"`
+	ID          uint      `gorm:"primaryKey" json:"id"`
+	Name        string    `gorm:"column:name;not null" json:"name"`
+	Description string    `gorm:"column:description" json:"description"`
+	CreatedAt   time.Time `json:"createdAt"`
+	UpdatedAt   time.Time `json:"updatedAt"`
+}
+
+type Product struct {
+	ID          uint      `gorm:"primaryKey" json:"id"`
+	Name        string    `gorm:"column:name;not null" json:"name"`
+	ImageURL    string    `gorm:"imageurl" json:"imageURL"`
+	Description string    `gorm:"column:description" json:"description"`
+	CategoryID  uint      `gorm:"column:category_id;not null" json:"categoryId"`
+	Category    *Category `json:"category"`
+	SKU         string    `gorm:"uniqueIndex;not null"`
+	CreatedAt   time.Time `json:"createdAt"`
+	UpdatedAt   time.Time `json:"updatedAt"`
 }
 
 type Stock struct {
@@ -31,4 +44,31 @@ type StockMovement struct {
 	Quantity  int       `gorm:"not null"`
 	Date      time.Time `gorm:"not null"`
 	Notes     string
+}
+
+type ProductDTO struct {
+	ID          uint      `gorm:"primaryKey" json:"id"`
+	Name        string    `gorm:"column:name;not null" json:"name"`
+	ImageURL    string    `gorm:"imageurl" json:"imageURL"`
+	Description string    `gorm:"column:description" json:"description"`
+	CategoryID  uint      `gorm:"column:category_id;not null" json:"categoryId"`
+	Category    *Category `json:"category"`
+	SKU         string    `gorm:"uniqueIndex;not null"`
+	CreatedAt   time.Time `json:"createdAt"`
+	UpdatedAt   time.Time `json:"updatedAt"`
+	Quantity    int       `json:"quantity"`
+}
+
+type MovementDTO struct {
+	Type     string    `json:"type"`
+	Quantity int       `json:"quantity"`
+	Date     time.Time `json:"date"`
+	Notes    string    `json:"notes"`
+	Product  struct {
+		Name     string `json:"name"`
+		ImageURL string `json:"imageURL"`
+	} `json:"product"`
+	User struct {
+		Username string `json:"username"`
+	} `json:"user"`
 }

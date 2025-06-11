@@ -1,6 +1,7 @@
 package server
 
 import (
+	"stock-management/internal/domain/services"
 	"stock-management/internal/domain/usecases"
 	"time"
 
@@ -14,14 +15,16 @@ type Server struct {
 	router       *gin.Engine
 	authService  *usecases.AuthService
 	stockService *usecases.StockService
+	jwtService   services.JWTService
 }
 
-func NewServer(db *gorm.DB, authService *usecases.AuthService, stockService *usecases.StockService) *Server {
+func NewServer(db *gorm.DB, authService *usecases.AuthService, stockService *usecases.StockService, jwtService services.JWTService) *Server {
 	server := &Server{
 		db:           db,
 		router:       gin.Default(),
 		authService:  authService,
 		stockService: stockService,
+		jwtService:   jwtService,
 	}
 
 	server.setupCORS()
@@ -49,13 +52,34 @@ func (s *Server) setupRoutes() {
 		auth.POST("/logout", s.handleLogout)
 	}
 
+	// Product routes
+	products := s.router.Group("/api/products")
+	products.Use(AuthMiddleware(s.jwtService))
+	{
+		products.GET("", s.handleGetProducts)
+		products.POST("", s.handleCreateProduct)
+		products.PUT("/:id", s.handleUpdateProduct)
+		products.DELETE("/:id", s.handleDeleteProduct)
+	}
+
+	// Category routes
+	categories := s.router.Group("/api/categories")
+	categories.Use(AuthMiddleware(s.jwtService))
+	{
+		categories.GET("", s.handleGetCategories)
+		categories.POST("", s.handleCreateCategory)
+		categories.PUT("/:id", s.handleUpdateCategory)
+		categories.DELETE("/:id", s.handleDeleteCategory)
+	}
+
 	// Stock routes
 	stock := s.router.Group("/api/stock")
+	stock.Use(AuthMiddleware(s.jwtService))
 	{
 		stock.POST("/import", s.handleImportStock)
 		stock.POST("/export", s.handleExportStock)
 		stock.GET("/current", s.handleGetCurrentStock)
-		stock.GET("/movements", s.handleGetStockMovements)
+		stock.POST("/movements", s.handleGetStockMovements)
 		stock.GET("/summary", s.handleGetStockSummary)
 	}
 }

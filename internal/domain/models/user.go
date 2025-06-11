@@ -13,3 +13,17 @@ type User struct {
 	Email       string `gorm:"uniqueIndex;not null"`
 	LastLoginAt time.Time
 }
+
+type UserDTO struct {
+	Username    string `gorm:"uniqueIndex;not null"`
+	Email       string `gorm:"uniqueIndex;not null"`
+	LastLoginAt time.Time
+}
+
+func (user *User) ToDTO() *UserDTO {
+	return &UserDTO{
+		Username:    user.Username,
+		Email:       user.Email,
+		LastLoginAt: user.LastLoginAt,
+	}
+}
