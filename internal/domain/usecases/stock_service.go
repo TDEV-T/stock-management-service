@@ -146,6 +146,7 @@ func (s *StockService) GetStockMovements(ctx context.Context, startDate, endDate
 		if movement.Product.ID != 0 {
 			dto.Product.Name = movement.Product.Name
 			dto.Product.ImageURL = movement.Product.ImageURL
+			dto.Product.SKU = movement.Product.SKU
 		}
 
 		// Map user info

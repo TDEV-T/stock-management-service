@@ -22,7 +22,7 @@ type Product struct {
 	Description string    `gorm:"column:description" json:"description"`
 	CategoryID  uint      `gorm:"column:category_id;not null" json:"categoryId"`
 	Category    *Category `json:"category"`
-	SKU         string    `gorm:"uniqueIndex;not null"`
+	SKU         string    `gorm:"uniqueIndex;not null json:"sku"`
 	CreatedAt   time.Time `json:"createdAt"`
 	UpdatedAt   time.Time `json:"updatedAt"`
 }
@@ -67,6 +67,7 @@ type MovementDTO struct {
 	Product  struct {
 		Name     string `json:"name"`
 		ImageURL string `json:"imageURL"`
+		SKU      string `json:"SKU"`
 	} `json:"product"`
 	User struct {
 		Username string `json:"username"`
